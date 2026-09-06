@@ -165,7 +165,10 @@ body{
 
 #splash h1{
 
-    font-size:52px;
+    font-size:48px;
+
+    color:var(--gold);
+   
     letter-spacing:5px;
     font-weight:300;
 
