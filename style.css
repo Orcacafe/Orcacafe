@@ -540,6 +540,14 @@ body{
 
 }
 
+.social-id{
+
+    color:#F5ECDD;
+
+    font-weight:500;
+
+}
+
 .insta-icon{
 
     width:20px;
@@ -547,14 +555,6 @@ body{
     height:20px;
 
     flex:none;
-
-}
-
-.social-id{
-
-    color:#F5ECDD;
-
-    font-weight:500;
 
 }
 
