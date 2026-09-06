@@ -474,3 +474,20 @@ body{
     }
 
 }
+
+/* ---------- Contact Links ---------- */
+
+.info a,
+.info a:visited{
+
+    color: var(--text);
+
+    text-decoration: none;
+
+}
+
+.info a:hover{
+
+    color: var(--gold-light);
+
+}
