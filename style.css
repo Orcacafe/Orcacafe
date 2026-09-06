@@ -1,0 +1,476 @@
+/* ======================================================
+   ORCA CAFE - STYLE SHEET
+   Version 1.0
+====================================================== */
+
+:root{
+
+    --bg:#041126;
+    --navy:#082347;
+    --navy2:#0b2d58;
+
+    --gold:#C8A96A;
+    --gold-light:#E8D7A8;
+
+    --text:#F5ECDD;
+    --glass:rgba(8,35,71,.62);
+
+    --border:rgba(232,215,168,.18);
+
+}
+
+/* ---------- Reset ---------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    direction:rtl;
+    font-family:'Vazirmatn',sans-serif;
+
+    background:var(--bg);
+    color:var(--text);
+
+    min-height:100vh;
+    overflow-x:hidden;
+
+}
+
+
+/* ---------- Ocean Background ---------- */
+
+.background{
+
+    position:fixed;
+    inset:0;
+
+    background-image:url("assets/ocean.png");
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    z-index:-3;
+
+}
+
+/* dark overlay */
+
+.background::before{
+
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:
+    linear-gradient(to bottom,
+    rgba(4,17,38,.35),
+    rgba(4,17,38,.60),
+    rgba(4,17,38,.82));
+
+}
+
+/* moving light */
+
+.background::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:140%;
+    height:80%;
+
+    left:-20%;
+    top:-10%;
+
+    background:
+    radial-gradient(circle,
+    rgba(160,220,255,.18),
+    transparent 65%);
+
+    animation:lightMove 12s ease-in-out infinite;
+
+}
+
+@keyframes lightMove{
+
+    0%{transform:translateY(-20px);}
+    50%{transform:translateY(30px);}
+    100%{transform:translateY(-20px);}
+
+}
+
+
+/* ---------- Splash ---------- */
+
+#splash{
+
+    position:fixed;
+    inset:0;
+
+    background:#041126;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    z-index:999;
+
+    animation:splashHide .8s ease forwards;
+    animation-delay:1.2s;
+
+}
+
+@keyframes splashHide{
+
+    to{
+        opacity:0;
+        visibility:hidden;
+    }
+
+}
+
+.splash-logo{
+
+    width:120px;
+    margin-bottom:18px;
+
+    animation:logoPop .8s ease;
+
+}
+
+@keyframes logoPop{
+
+    from{
+        transform:scale(.82);
+        opacity:.2;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
+#splash h1{
+
+    font-size:52px;
+    letter-spacing:5px;
+    font-weight:300;
+
+}
+
+#splash p{
+
+    margin-top:8px;
+
+    color:var(--gold);
+
+    letter-spacing:8px;
+    font-size:14px;
+
+}
+
+
+/* ---------- Layout ---------- */
+
+.container{
+
+    width:min(100%,480px);
+    margin:auto;
+
+    padding:22px 16px 28px;
+
+}
+
+.hero{
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    padding-top:30px;
+    padding-bottom:22px;
+
+}
+
+.logo{
+
+    width:88px;
+    margin-bottom:12px;
+
+}
+
+.hero h1{
+
+    font-size:44px;
+    font-weight:300;
+    letter-spacing:3px;
+
+}
+
+.subtitle{
+
+    margin-top:6px;
+
+    color:var(--gold);
+
+    letter-spacing:4px;
+    font-size:13px;
+
+}
+
+
+/* ---------- Category Tabs ---------- */
+
+.tabs{
+
+    display:flex;
+    flex-direction:row;
+    overflow-x:auto;
+
+    gap:10px;
+
+    padding:4px 0 10px;
+
+    scrollbar-width:none;
+
+}
+
+.tabs::-webkit-scrollbar{
+    display:none;
+}
+
+.tabs button{
+
+    flex:0 0 auto;
+
+    border:none;
+
+    border-radius:20px;
+
+    padding:10px 16px;
+
+    background:rgba(255,255,255,.08);
+
+    color:var(--text);
+
+    border:1px solid rgba(200,169,106,.22);
+
+    font-family:inherit;
+    font-size:13px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.tabs button.active{
+
+    background:var(--gold);
+    color:#082347;
+
+    font-weight:700;
+
+    box-shadow:0 0 18px rgba(200,169,106,.25);
+
+}
+
+
+/* ---------- Glass Card ---------- */
+
+.menu-card{
+
+    margin-top:12px;
+
+    border-radius:24px;
+
+    background:var(--glass);
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid var(--border);
+
+    overflow:hidden;
+
+    animation:fadeUp .35s ease;
+
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:.2;
+        transform:translateY(14px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+.menu-title{
+
+    background:rgba(7,29,56,.85);
+
+    padding:18px 22px;
+
+    color:var(--gold-light);
+
+    font-size:22px;
+    font-weight:700;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+
+/* ---------- Rows ---------- */
+
+.menu-row{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:15px 22px;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.menu-row:last-child{
+
+    border-bottom:none;
+
+}
+
+.item-name{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    font-size:15px;
+
+}
+
+.price{
+
+    color:var(--gold-light);
+
+    font-weight:700;
+    font-size:15px;
+
+}
+
+
+/* ---------- Badge ---------- */
+
+.badge{
+
+    background:#8A6A2A;
+
+    color:#fff7e5;
+
+    padding:3px 8px;
+
+    border-radius:8px;
+
+    font-size:11px;
+
+}
+
+
+/* ---------- Footer ---------- */
+
+.footer{
+
+    margin-top:28px;
+
+    padding-bottom:24px;
+
+}
+
+.info{
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
+    margin-bottom:18px;
+
+    color:#F0E8D8;
+    font-size:13px;
+
+}
+
+.footerButtons{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+
+    gap:10px;
+
+}
+
+.btn{
+
+    text-decoration:none;
+
+    text-align:center;
+
+    padding:12px 8px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.08);
+
+    color:var(--text);
+
+    border:1px solid rgba(200,169,106,.20);
+
+    transition:.25s;
+
+}
+
+.btn:hover{
+
+    background:var(--gold);
+
+    color:#082347;
+
+}
+
+
+/* ---------- Mobile ---------- */
+
+@media (max-width:420px){
+
+    .hero h1{
+        font-size:38px;
+    }
+
+    .menu-title{
+        font-size:20px;
+    }
+
+    .menu-row{
+        padding:13px 18px;
+    }
+
+}
