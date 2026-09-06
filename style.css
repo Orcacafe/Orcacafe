@@ -503,7 +503,67 @@ body{
 }
 
 .insta-icon{
+/* ===== Premium Footer ===== */
 
+.info{
+
+    margin-top:18px;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.info .item{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    color:#F5ECDD;
+
+    font-size:15px;
+
+    letter-spacing:.2px;
+
+}
+
+.instagram-row{
+
+    direction:ltr;
+
+}
+
+.insta-icon{
+
+    width:20px;
+
+    height:20px;
+
+    flex:none;
+
+}
+
+.social-id{
+
+    color:#F5ECDD;
+
+    font-weight:500;
+
+}
+
+.info a{
+
+    color:#F5ECDD;
+
+    text-decoration:none;
+
+}
     width:18px;
     height:18px;
 
