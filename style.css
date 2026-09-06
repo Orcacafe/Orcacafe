@@ -493,3 +493,18 @@ body{
     color: var(--gold-light);
 
 }
+.instagram-row{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+
+}
+
+.insta-icon{
+
+    width:18px;
+    height:18px;
+
+}
