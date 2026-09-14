@@ -846,13 +846,21 @@ function openReceiptWindow() {
 
                 .receipt-columns {
 
-                    font-weight:700;
+                   font-weight:700;
+               
+                   font-size:9px;
+               
+                   margin-bottom:2mm;
+            
+               }
 
-                    font-size:9px;
-
-                    margin-bottom:2mm;
-
-                }
+               .receipt-columns .column-name {
+                   text-align:right;
+               }
+               
+               .receipt-columns span:not(.column-name) {
+                   text-align:center;
+               }
 
 
                 .receipt-item {
