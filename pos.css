@@ -149,15 +149,38 @@
 /* Action Buttons */
 
 .action-buttons{
-
     display:grid;
-
     grid-template-columns:1fr 1fr;
-
     gap:12px;
-
     margin-top:18px;
+}
 
+.action-btn{
+    height:52px;
+    border:none;
+    border-radius:18px;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.print-btn{
+    background:#C8A96A;
+    color:#082347;
+}
+
+.pdf-btn{
+    background:rgba(232,215,168,.12);
+    color:#E8D7A8;
+    border:1px solid rgba(232,215,168,.3);
+}
+
+.clear-btn{
+    grid-column:1 / -1;
+    background:rgba(255,255,255,.08);
+    color:#F5ECDD;
+    border:1px solid rgba(232,215,168,.2);
 }
 
 .action-btn{
