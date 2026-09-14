@@ -743,6 +743,7 @@ function openReceiptWindow() {
                     color:#111;
 
                     font-family:
+                        Vazirmatn,
                         Arial,
                         Tahoma,
                         sans-serif;
