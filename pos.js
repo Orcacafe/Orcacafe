@@ -357,21 +357,27 @@ function renderOrder() {
 
     buttons.className = "action-buttons";
 
-    buttons.innerHTML = `
+buttons.innerHTML = `
 
-        <button
-            class="action-btn print-btn"
-            onclick="printReceipt()">
-            🖨 چاپ فاکتور
-        </button>
+    <button
+        class="action-btn print-btn"
+        onclick="printReceipt()">
+        🖨 چاپ فاکتور
+    </button>
 
-        <button
-            class="action-btn clear-btn"
-            onclick="clearOrder()">
-            پاک کردن سفارش
-        </button>
+    <button
+        class="action-btn pdf-btn"
+        onclick="savePDF()">
+        📄 ذخیره PDF
+    </button>
 
-    `;
+    <button
+        class="action-btn clear-btn"
+        onclick="clearOrder()">
+        پاک کردن سفارش
+    </button>
+
+`;
 
     panel.appendChild(buttons);
 
@@ -406,14 +412,11 @@ function clearOrder() {
 ===================================================== */
 
 function printReceipt() {
+/* =====================================================
+   ساخت محتوای رسید
+===================================================== */
 
-    if (order.length === 0) {
-
-        alert("ابتدا حداقل یک آیتم به سفارش اضافه کنید.");
-
-        return;
-    }
-
+function createReceiptHTML() {
 
     const total =
         order.reduce(
@@ -422,17 +425,59 @@ function printReceipt() {
             0
         );
 
+    let itemsHTML = "";
 
-    let receiptHTML = `
+    order.forEach(item => {
+
+        const itemTotal =
+            item.price * item.quantity;
+
+        itemsHTML += `
+            <div class="receipt-item">
+
+                <div class="item-name">
+                    ${item.name}
+                </div>
+
+                <div class="item-qty">
+                    ${toPersianNumber(item.quantity)}
+                </div>
+
+                <div class="item-price">
+                    ${toPersianNumber(item.price)}
+                </div>
+
+                <div class="item-total">
+                    ${toPersianNumber(itemTotal)}
+                </div>
+
+            </div>
+        `;
+    });
+
+
+    const now = new Date();
+
+    const date =
+        toPersianNumber(
+            now.toLocaleDateString("fa-IR")
+        );
+
+    const time =
+        now.toLocaleTimeString(
+            "fa-IR",
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+
+    return `
 
         <div class="receipt">
 
             <div class="receipt-header">
-
-                <img
-                    src="assets/logo.png"
-                    class="receipt-logo"
-                    alt="ORCA">
 
                 <div class="receipt-title">
                     ORCA CAFE
@@ -444,67 +489,141 @@ function printReceipt() {
 
             </div>
 
-            <div class="receipt-line"></div>
 
-    `;
+            <div class="receipt-info">
 
+                <span>
+                    تاریخ: ${date}
+                </span>
 
-    order.forEach(item => {
-
-        const itemTotal =
-            item.price * item.quantity;
-
-        receiptHTML += `
-
-            <div class="receipt-item">
-
-                <div>
-                    ${item.name}
-                </div>
-
-                <div>
-                    ${toPersianNumber(item.quantity)}
-                    ×
-                    ${toPersianNumber(item.price)}
-                </div>
+                <span>
+                    ساعت: ${time}
+                </span>
 
             </div>
 
-            <div class="receipt-item-total">
-                ${toPersianNumber(itemTotal)}
-            </div>
-
-        `;
-
-    });
-
-
-    receiptHTML += `
 
             <div class="receipt-line"></div>
+
+
+            <div class="receipt-columns">
+
+                <span class="column-name">
+                    کالا
+                </span>
+
+                <span>
+                    تعداد
+                </span>
+
+                <span>
+                    قیمت
+                </span>
+
+                <span>
+                    مبلغ
+                </span>
+
+            </div>
+
+
+            ${itemsHTML}
+
+
+            <div class="receipt-line"></div>
+
 
             <div class="receipt-total">
-                <span>مبلغ کل</span>
+
+                <span>
+                    مبلغ کل
+                </span>
+
                 <span>
                     ${toPersianNumber(total)}
                 </span>
+
             </div>
 
+
+            <div class="receipt-line"></div>
+
+
             <div class="receipt-footer">
-                از خرید شما سپاسگزاریم
+
+                از اینکه کافه اورکا را
+                انتخاب کردید سپاسگزاریم
+
             </div>
 
         </div>
 
     `;
+}
 
+
+/* =====================================================
+   چاپ فاکتور
+===================================================== */
+
+function printReceipt() {
+
+    if (order.length === 0) {
+
+        alert(
+            "ابتدا حداقل یک آیتم به سفارش اضافه کنید."
+        );
+
+        return;
+    }
+
+    openReceiptWindow();
+
+}
+
+
+/* =====================================================
+   ذخیره / خروجی PDF
+===================================================== */
+
+function savePDF() {
+
+    if (order.length === 0) {
+
+        alert(
+            "ابتدا حداقل یک آیتم به سفارش اضافه کنید."
+        );
+
+        return;
+    }
+
+    openReceiptWindow();
+
+}
+
+
+/* =====================================================
+   باز کردن رسید برای چاپ یا PDF
+===================================================== */
+
+function openReceiptWindow() {
 
     const printWindow =
         window.open(
             "",
             "_blank",
-            "width=400,height=600"
+            "width=420,height=700"
         );
+
+
+    if (!printWindow) {
+
+        alert(
+            "پنجره چاپ توسط مرورگر مسدود شده است."
+        );
+
+        return;
+    }
 
 
     printWindow.document.write(`
@@ -517,11 +636,14 @@ function printReceipt() {
 
             <meta charset="UTF-8">
 
-            <title>فاکتور ORCA CAFE</title>
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0">
 
-            <link
-                href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
-                rel="stylesheet">
+            <title>
+                فاکتور ORCA CAFE
+            </title>
+
 
             <style>
 
@@ -529,81 +651,220 @@ function printReceipt() {
                     box-sizing:border-box;
                 }
 
+
+                html,
                 body {
+
                     margin:0;
-                    padding:10px;
+                    padding:0;
+
                     background:white;
+
                     color:#111;
-                    font-family:Vazirmatn,Arial,sans-serif;
+
+                    font-family:
+                        Arial,
+                        Tahoma,
+                        sans-serif;
+
                 }
+
+
+                body {
+
+                    width:100%;
+
+                }
+
 
                 .receipt {
-                    width:100%;
-                    max-width:300px;
-                    margin:auto;
-                    font-size:13px;
+
+                    width:72mm;
+
+                    margin:0 auto;
+
+                    padding:4mm 2mm;
+
+                    font-size:11px;
+
                 }
+
 
                 .receipt-header {
+
                     text-align:center;
+
+                    margin-bottom:5mm;
+
                 }
 
-                .receipt-logo {
-                    width:70px;
-                    height:auto;
-                    margin-bottom:5px;
-                }
 
                 .receipt-title {
-                    font-size:18px;
+
+                    font-size:20px;
+
                     font-weight:700;
+
+                    letter-spacing:.5px;
+
                 }
+
 
                 .receipt-subtitle {
-                    font-size:13px;
-                    margin-top:3px;
+
+                    font-size:12px;
+
+                    margin-top:2mm;
+
                 }
+
+
+                .receipt-info {
+
+                    display:flex;
+
+                    justify-content:space-between;
+
+                    gap:5px;
+
+                    font-size:9px;
+
+                    margin-bottom:3mm;
+
+                }
+
 
                 .receipt-line {
-                    border-top:1px dashed #777;
-                    margin:10px 0;
+
+                    border-top:
+                        1px dashed #555;
+
+                    margin:
+                        3mm 0;
+
                 }
+
+
+                .receipt-columns,
+                .receipt-item {
+
+                    display:grid;
+
+                    grid-template-columns:
+                        minmax(0, 1fr)
+                        12mm
+                        16mm
+                        17mm;
+
+                    column-gap:1mm;
+
+                    align-items:center;
+
+                }
+
+
+                .receipt-columns {
+
+                    font-weight:700;
+
+                    font-size:9px;
+
+                    margin-bottom:2mm;
+
+                }
+
 
                 .receipt-item {
-                    display:flex;
-                    justify-content:space-between;
-                    gap:10px;
-                    margin-top:6px;
+
+                    font-size:10px;
+
+                    margin-bottom:2mm;
+
                 }
 
-                .receipt-item-total {
-                    text-align:left;
-                    margin-top:2px;
-                    font-weight:600;
+
+                .item-name {
+
+                    text-align:right;
+
+                    overflow-wrap:anywhere;
+
                 }
+
+
+                .item-qty,
+                .item-price,
+                .item-total {
+
+                    text-align:center;
+
+                }
+
+
+                .item-total {
+
+                    font-weight:600;
+
+                }
+
 
                 .receipt-total {
+
                     display:flex;
+
                     justify-content:space-between;
-                    font-size:16px;
+
+                    align-items:center;
+
+                    font-size:14px;
+
                     font-weight:700;
-                    margin-top:8px;
+
                 }
 
+
                 .receipt-footer {
+
                     text-align:center;
-                    margin-top:20px;
-                    font-size:11px;
+
+                    font-size:10px;
+
+                    line-height:1.8;
+
+                    margin-top:6mm;
+
                 }
+
+
+                @page {
+
+                    size:80mm auto;
+
+                    margin:0;
+
+                }
+
 
                 @media print {
 
+                    html,
                     body {
+
+                        width:80mm;
+
+                        margin:0;
+
                         padding:0;
+
                     }
 
-                    @page {
-                        margin:4mm;
+
+                    .receipt {
+
+                        width:72mm;
+
+                        margin:0 auto;
+
                     }
 
                 }
@@ -612,9 +873,10 @@ function printReceipt() {
 
         </head>
 
+
         <body>
 
-            ${receiptHTML}
+            ${createReceiptHTML()}
 
         </body>
 
@@ -627,15 +889,14 @@ function printReceipt() {
 
     printWindow.focus();
 
+
     setTimeout(() => {
 
         printWindow.print();
 
-    }, 500);
+    }, 400);
 
 }
-
-
 /* =====================================================
    شروع برنامه
 ===================================================== */
