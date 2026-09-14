@@ -32,16 +32,18 @@ function toPersianNumber(str) {
 
 function renderCategories() {
 
-    const container = document.getElementById("categoryTabs");
+    const container =
+        document.getElementById("categoryTabs");
 
     container.innerHTML = "";
 
     categories.forEach((category, index) => {
 
-        const button = document.createElement("button");
+        const button =
+            document.createElement("button");
 
         button.className = "tab";
-        
+
         if (index === currentCategory) {
             button.classList.add("active");
         }
@@ -71,17 +73,22 @@ function renderCategories() {
 
 function renderMenu() {
 
-    const container = document.getElementById("menuContainer");
+    const container =
+        document.getElementById("menuContainer");
 
-    const category = categories[currentCategory];
+    const category =
+        categories[currentCategory];
 
     container.innerHTML = "";
 
-    const panel = document.createElement("div");
+    const panel =
+        document.createElement("div");
 
     panel.className = "order-panel";
 
-    const title = document.createElement("div");
+
+    const title =
+        document.createElement("div");
 
     title.className = "order-title";
 
@@ -97,7 +104,8 @@ function renderMenu() {
         const price = item[1];
         const special = item[2];
 
-        const row = document.createElement("div");
+        const row =
+            document.createElement("div");
 
         row.className = "pos-item";
 
@@ -105,11 +113,20 @@ function renderMenu() {
             <div>
                 <div class="pos-name">
                     ${name}
-                    ${special ? `<span class="special-tag">${special}</span>` : ""}
+                    ${
+                        special
+                            ? `<span class="special-tag">${special}</span>`
+                            : ""
+                    }
                 </div>
             </div>
 
-            <div style="display:flex; align-items:center; gap:12px;">
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+            ">
+
                 <span class="pos-price">
                     ${price}
                 </span>
@@ -117,8 +134,10 @@ function renderMenu() {
                 <button class="add-btn">
                     +
                 </button>
+
             </div>
         `;
+
 
         row.querySelector(".add-btn").onclick = () => {
 
@@ -129,9 +148,11 @@ function renderMenu() {
 
         };
 
+
         panel.appendChild(row);
 
     });
+
 
     container.appendChild(panel);
 }
@@ -146,10 +167,14 @@ function addToOrder(categoryIndex, itemIndex) {
     const item =
         categories[categoryIndex].items[itemIndex];
 
-    const name = item[0];
-    const price = Number(
-        toEnglishNumber(item[1])
-    );
+    const name =
+        item[0];
+
+    const price =
+        Number(
+            toEnglishNumber(item[1])
+        );
+
 
     const existing =
         order.find(
@@ -157,6 +182,7 @@ function addToOrder(categoryIndex, itemIndex) {
                 x.categoryIndex === categoryIndex &&
                 x.itemIndex === itemIndex
         );
+
 
     if (existing) {
 
@@ -173,6 +199,7 @@ function addToOrder(categoryIndex, itemIndex) {
         });
 
     }
+
 
     renderOrder();
 }
@@ -221,6 +248,7 @@ function renderOrder() {
 
     container.innerHTML = "";
 
+
     const panel =
         document.createElement("div");
 
@@ -232,7 +260,8 @@ function renderOrder() {
 
     title.className = "order-title";
 
-    title.textContent = "🧾 سفارش جاری";
+    title.textContent =
+        "🧾 سفارش جاری";
 
     panel.appendChild(title);
 
@@ -266,12 +295,15 @@ function renderOrder() {
 
         row.className = "pos-item";
 
+
         const itemTotal =
             item.price * item.quantity;
+
 
         row.innerHTML = `
 
             <div>
+
                 <div class="pos-name">
                     ${item.name}
                 </div>
@@ -281,11 +313,15 @@ function renderOrder() {
                     font-size:13px;
                     margin-top:4px;
                 ">
+
                     ${toPersianNumber(item.price)}
                     ×
                     ${toPersianNumber(item.quantity)}
+
                 </div>
+
             </div>
+
 
             <div style="
                 display:flex;
@@ -296,25 +332,38 @@ function renderOrder() {
                 <button
                     class="quantity-btn"
                     onclick="decreaseItem(${index})">
+
                     −
+
                 </button>
 
+
                 <span class="quantity">
+
                     ${toPersianNumber(item.quantity)}
+
                 </span>
+
 
                 <button
                     class="quantity-btn"
                     onclick="increaseItem(${index})">
+
                     +
+
                 </button>
 
+
                 <span class="pos-price">
+
                     ${toPersianNumber(itemTotal)}
+
                 </span>
 
             </div>
+
         `;
+
 
         panel.appendChild(row);
 
@@ -336,14 +385,22 @@ function renderOrder() {
     const totalRow =
         document.createElement("div");
 
-    totalRow.className = "total-row";
+    totalRow.className =
+        "total-row";
+
 
     totalRow.innerHTML = `
-        <span>مبلغ کل</span>
+
+        <span>
+            مبلغ کل
+        </span>
+
         <span>
             ${toPersianNumber(total)}
         </span>
+
     `;
+
 
     panel.appendChild(totalRow);
 
@@ -355,29 +412,40 @@ function renderOrder() {
     const buttons =
         document.createElement("div");
 
-    buttons.className = "action-buttons";
+    buttons.className =
+        "action-buttons";
 
-buttons.innerHTML = `
 
-    <button
-        class="action-btn print-btn"
-        onclick="printReceipt()">
-        🖨 چاپ فاکتور
-    </button>
+    buttons.innerHTML = `
 
-    <button
-        class="action-btn pdf-btn"
-        onclick="savePDF()">
-        📄 ذخیره PDF
-    </button>
+        <button
+            class="action-btn print-btn"
+            onclick="printReceipt()">
 
-    <button
-        class="action-btn clear-btn"
-        onclick="clearOrder()">
-        پاک کردن سفارش
-    </button>
+            🖨 چاپ فاکتور
 
-`;
+        </button>
+
+
+        <button
+            class="action-btn pdf-btn"
+            onclick="savePDF()">
+
+            📄 ذخیره PDF
+
+        </button>
+
+
+        <button
+            class="action-btn clear-btn"
+            onclick="clearOrder()">
+
+            پاک کردن سفارش
+
+        </button>
+
+    `;
+
 
     panel.appendChild(buttons);
 
@@ -395,6 +463,7 @@ function clearOrder() {
         return;
     }
 
+
     if (
         confirm("آیا سفارش فعلی پاک شود؟")
     ) {
@@ -408,11 +477,6 @@ function clearOrder() {
 
 
 /* =====================================================
-   چاپ فاکتور
-===================================================== */
-
-function printReceipt() {
-/* =====================================================
    ساخت محتوای رسید
 ===================================================== */
 
@@ -425,14 +489,18 @@ function createReceiptHTML() {
             0
         );
 
+
     let itemsHTML = "";
+
 
     order.forEach(item => {
 
         const itemTotal =
             item.price * item.quantity;
 
+
         itemsHTML += `
+
             <div class="receipt-item">
 
                 <div class="item-name">
@@ -452,23 +520,28 @@ function createReceiptHTML() {
                 </div>
 
             </div>
+
         `;
+
     });
 
 
-    const now = new Date();
+    const now =
+        new Date();
+
 
     const date =
         toPersianNumber(
             now.toLocaleDateString("fa-IR")
         );
 
+
     const time =
         now.toLocaleTimeString(
             "fa-IR",
             {
-                hour:"2-digit",
-                minute:"2-digit"
+                hour: "2-digit",
+                minute: "2-digit"
             }
         );
 
@@ -476,6 +549,7 @@ function createReceiptHTML() {
     return `
 
         <div class="receipt">
+
 
             <div class="receipt-header">
 
@@ -556,9 +630,11 @@ function createReceiptHTML() {
 
             </div>
 
+
         </div>
 
     `;
+
 }
 
 
@@ -576,6 +652,7 @@ function printReceipt() {
 
         return;
     }
+
 
     openReceiptWindow();
 
@@ -596,6 +673,7 @@ function savePDF() {
 
         return;
     }
+
 
     openReceiptWindow();
 
@@ -636,9 +714,11 @@ function openReceiptWindow() {
 
             <meta charset="UTF-8">
 
+
             <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0">
+
 
             <title>
                 فاکتور ORCA CAFE
@@ -671,9 +751,7 @@ function openReceiptWindow() {
 
 
                 body {
-
                     width:100%;
-
                 }
 
 
@@ -897,6 +975,8 @@ function openReceiptWindow() {
     }, 400);
 
 }
+
+
 /* =====================================================
    شروع برنامه
 ===================================================== */
