@@ -728,7 +728,7 @@ function openReceiptWindow() {
 
 
             <style>
-
+                @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
                 * {
                     box-sizing:border-box;
                 }
@@ -745,7 +745,7 @@ function openReceiptWindow() {
                     color:#111;
 
                     font-family:
-                        Vazirmatn,
+                        "Vazirmatn",
                         Arial,
                         Tahoma,
                         sans-serif;
