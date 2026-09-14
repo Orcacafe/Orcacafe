@@ -713,7 +713,9 @@ function openReceiptWindow() {
         <head>
 
             <meta charset="UTF-8">
-
+            <link
+               href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
+               rel="stylesheet">
 
             <meta
                 name="viewport"
@@ -831,8 +833,8 @@ function openReceiptWindow() {
 
                     grid-template-columns:
                         minmax(0, 1fr)
-                        12mm
-                        16mm
+                        11mm
+                        17mm
                         17mm;
 
                     column-gap:1mm;
@@ -876,6 +878,7 @@ function openReceiptWindow() {
                 .item-total {
 
                     text-align:center;
+                    white-space:nowrap;
 
                 }
 
