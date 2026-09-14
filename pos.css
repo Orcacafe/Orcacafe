@@ -1,1 +1,197 @@
+/* ===================================
+   ORCA POS
+=================================== */
 
+.pos-title{
+
+    text-align:center;
+
+    color:#E8D7A8;
+
+    margin-bottom:18px;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    letter-spacing:.5px;
+
+}
+
+/* Menu Items */
+
+.pos-item{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:14px 18px;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.pos-name{
+
+    color:#F5ECDD;
+
+    font-size:15px;
+
+}
+
+.pos-price{
+
+    color:#E8D7A8;
+
+    font-weight:700;
+
+    margin-left:10px;
+
+}
+
+/* + button */
+
+.add-btn{
+
+    width:34px;
+
+    height:34px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#C8A96A;
+
+    color:#082347;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.add-btn:hover{
+
+    transform:scale(1.08);
+
+}
+
+/* Order Panel */
+
+.order-panel{
+
+    margin-top:22px;
+
+    border-radius:22px;
+
+    background:rgba(8,35,71,.72);
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(232,215,168,.18);
+
+    padding:18px;
+
+}
+
+.order-title{
+
+    color:#E8D7A8;
+
+    font-size:20px;
+
+    font-weight:700;
+
+    margin-bottom:14px;
+
+}
+
+.empty-order{
+
+    text-align:center;
+
+    color:#C7C7C7;
+
+    padding:18px 0;
+
+}
+
+.total-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:14px;
+
+    padding-top:14px;
+
+    border-top:1px solid rgba(255,255,255,.1);
+
+    color:#F5ECDD;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+/* Action Buttons */
+
+.action-buttons{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:12px;
+
+    margin-top:18px;
+
+}
+
+.action-btn{
+
+    height:52px;
+
+    border:none;
+
+    border-radius:18px;
+
+    font-family:inherit;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+.print-btn{
+
+    background:#C8A96A;
+
+    color:#082347;
+
+}
+
+.clear-btn{
+
+    background:rgba(255,255,255,.08);
+
+    color:#F5ECDD;
+
+    border:1px solid rgba(232,215,168,.2);
+
+}
