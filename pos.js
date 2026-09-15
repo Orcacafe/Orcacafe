@@ -558,7 +558,7 @@ function createReceiptHTML() {
                 </div>
 
                 <div class="receipt-subtitle">
-                    فاکتور فروش
+                    فاکتور
                 </div>
 
             </div>
@@ -583,7 +583,7 @@ function createReceiptHTML() {
             <div class="receipt-columns">
 
                 <span class="column-name">
-                    کالا
+                    سفارش
                 </span>
 
                 <span>
