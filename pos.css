@@ -10,10 +10,59 @@
 .pos-title{
     text-align:center;
     color:#E8D7A8;
-    margin-bottom:18px;
+    margin-bottom:10px;
     font-size:28px;
     font-weight:700;
     letter-spacing:.5px;
+}
+
+
+/* ===================================
+   MANUAL LOCK BUTTON
+=================================== */
+
+.lock-pos-btn{
+    display:block;
+
+    width:150px;
+    height:40px;
+
+    margin:0 auto 18px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(232,215,168,.30);
+
+    background:rgba(255,255,255,.06);
+
+    color:#E8D7A8;
+
+    font-family:inherit;
+
+    font-size:13px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.lock-pos-btn:hover{
+    background:rgba(200,169,106,.12);
+
+    border-color:#C8A96A;
+
+    transform:translateY(-1px);
+
+    box-shadow:
+        0 6px 16px
+        rgba(200,169,106,.10);
+}
+
+.lock-pos-btn:active{
+    transform:translateY(0);
+
+    box-shadow:none;
 }
 
 
@@ -500,6 +549,13 @@
     .order-panel{
         border-radius:20px;
         padding:16px;
+    }
+
+    .lock-pos-btn{
+        width:140px;
+        height:38px;
+        margin-bottom:16px;
+        font-size:12px;
     }
 
     .lock-card{
