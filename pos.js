@@ -428,12 +428,17 @@ function renderOrder() {
 
 
         <button
-            class="action-btn pdf-btn"
-            onclick="savePDF()">
+             class="action-btn pdf-btn"
+             onclick="savePDF()">
 
-            📄 ذخیره PDF
+             <span class="pdf-icon">📄</span>
 
-        </button>
+             <span class="pdf-text">
+              ذخیره PDF
+        <small>نسخه دیجیتال</small>
+    </span>
+
+</button>
 
 
         <button
