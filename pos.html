@@ -3,63 +3,139 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
-<title>ORCA POS</title>
+    <title>ORCA POS</title>
 
-<link rel="preconnect"
-      href="https://fonts.googleapis.com">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
 
-<link rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
-<link rel="stylesheet"
-      href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-<link rel="stylesheet"
-      href="pos.css">
+    <link rel="stylesheet" href="pos.css">
 
 </head>
 
+
 <body>
 
-<div class="background"></div>
+    <!-- =================================================
+         ORCA POS LOCK SCREEN
+    ================================================== -->
 
-<main class="container">
+    <div
+        id="lockScreen"
+        class="lock-screen">
 
-<header class="hero">
+        <div class="lock-card">
 
-<img src="assets/logo.png"
-     class="logo"
-     alt="ORCA">
+            <img
+                src="assets/logo.png"
+                class="lock-logo"
+                alt="ORCA">
 
-</header>
+            <h1>
+                ORCA POS
+            </h1>
 
-<h2 class="pos-title">
+            <p>
+                ورود صندوق‌دار
+            </p>
 
-ثبت سفارش
+            <input
+                id="pinInput"
+                type="password"
+                inputmode="numeric"
+                maxlength="4"
+                placeholder="••••"
+                class="pin-input"
+                autocomplete="off">
 
-</h2>
+            <button
+                id="unlockBtn"
+                class="unlock-btn">
 
-<nav id="categoryTabs"
-     class="tabs"></nav>
+                ورود
 
-<section id="menuContainer"></section>
+            </button>
 
-<section id="orderPanel"></section>
+            <div class="remember-note">
 
-</main>
+                این دستگاه به مدت ۳۰ روز
+                به خاطر سپرده می‌شود
 
-<script src="menu.js"></script>
+            </div>
 
-<script src="pos.js"></script>
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         ORCA POS APPLICATION
+    ================================================== -->
+
+    <div
+        id="posApp"
+        class="container">
+
+        <div class="background"></div>
+
+        <header class="hero">
+
+            <img
+                src="assets/logo.png"
+                class="logo"
+                alt="ORCA">
+
+        </header>
+
+
+        <h2 class="pos-title">
+            ثبت سفارش
+        </h2>
+
+
+        <nav
+            id="categoryTabs"
+            class="tabs">
+        </nav>
+
+
+        <section
+            id="menuContainer">
+        </section>
+
+
+        <section
+            id="orderPanel">
+        </section>
+
+    </div>
+
+
+    <!-- =================================================
+         JAVASCRIPT
+    ================================================== -->
+
+    <script src="menu.js"></script>
+
+    <script src="pos.js"></script>
 
 </body>
+
 </html>
