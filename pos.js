@@ -2,6 +2,23 @@
    ORCA CAFE - POS
 ===================================================== */
 
+
+/* =====================================================
+   تنظیمات ورود POS
+===================================================== */
+
+const POS_PIN = "2580";
+
+const REMEMBER_DAYS = 30;
+
+const REMEMBER_KEY =
+    "orca_pos_remember_until";
+
+
+/* =====================================================
+   متغیرهای اصلی POS
+===================================================== */
+
 let currentCategory = 0;
 let order = [];
 
@@ -11,8 +28,12 @@ let order = [];
 ===================================================== */
 
 function toEnglishNumber(str) {
+
     return String(str)
-        .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+        .replace(
+            /[۰-۹]/g,
+            d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)
+        );
 }
 
 
@@ -21,8 +42,269 @@ function toEnglishNumber(str) {
 ===================================================== */
 
 function toPersianNumber(str) {
+
     return String(str)
-        .replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+        .replace(
+            /\d/g,
+            d => "۰۱۲۳۴۵۶۷۸۹"[d]
+        );
+}
+
+
+/* =====================================================
+   نمایش POS بعد از ورود
+===================================================== */
+
+function showPOS() {
+
+    const lockScreen =
+        document.getElementById("lockScreen");
+
+    const posApp =
+        document.getElementById("posApp");
+
+
+    if (lockScreen) {
+
+        lockScreen.style.display = "none";
+
+    }
+
+
+    if (posApp) {
+
+        posApp.style.display = "block";
+
+    }
+
+}
+
+
+/* =====================================================
+   ذخیره ورود برای ۳۰ روز
+===================================================== */
+
+function rememberDevice() {
+
+    const expiresAt =
+        Date.now() +
+        REMEMBER_DAYS * 24 * 60 * 60 * 1000;
+
+
+    try {
+
+        localStorage.setItem(
+            REMEMBER_KEY,
+            String(expiresAt)
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "امکان ذخیره ورود در این دستگاه وجود ندارد.",
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   بررسی ورود ذخیره شده
+===================================================== */
+
+function checkRememberedLogin() {
+
+    let expiresAt = null;
+
+
+    try {
+
+        expiresAt =
+            Number(
+                localStorage.getItem(
+                    REMEMBER_KEY
+                )
+            );
+
+    } catch (error) {
+
+        expiresAt = null;
+
+    }
+
+
+    if (
+        expiresAt &&
+        Date.now() < expiresAt
+    ) {
+
+        showPOS();
+
+        return true;
+
+    }
+
+
+    /* اگر زمان اعتبار تمام شده باشد */
+
+    try {
+
+        localStorage.removeItem(
+            REMEMBER_KEY
+        );
+
+    } catch (error) {
+
+        console.warn(error);
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =====================================================
+   ورود با PIN
+===================================================== */
+
+function unlockPOS() {
+
+    const pinInput =
+        document.getElementById("pinInput");
+
+
+    if (!pinInput) {
+        return;
+    }
+
+
+    const enteredPIN =
+        pinInput.value.trim();
+
+
+    if (enteredPIN === POS_PIN) {
+
+        rememberDevice();
+
+        showPOS();
+
+        pinInput.value = "";
+
+        return;
+
+    }
+
+
+    alert(
+        "PIN وارد شده صحیح نیست."
+    );
+
+
+    pinInput.value = "";
+
+    pinInput.focus();
+
+}
+
+
+/* =====================================================
+   فعال سازی صفحه ورود
+===================================================== */
+
+function initializeLockScreen() {
+
+    const lockScreen =
+        document.getElementById("lockScreen");
+
+    const posApp =
+        document.getElementById("posApp");
+
+    const pinInput =
+        document.getElementById("pinInput");
+
+    const unlockBtn =
+        document.getElementById("unlockBtn");
+
+
+    if (
+        !lockScreen ||
+        !posApp
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       ابتدا POS را مخفی می‌کنیم
+       تا زمانی که ورود تأیید شود.
+    */
+
+    posApp.style.display = "none";
+
+
+    /*
+       اگر دستگاه قبلاً به خاطر سپرده شده،
+       مستقیماً وارد POS می‌شویم.
+    */
+
+    if (checkRememberedLogin()) {
+
+        return;
+
+    }
+
+
+    /*
+       نمایش صفحه قفل
+    */
+
+    lockScreen.style.display = "flex";
+
+
+    /*
+       دکمه ورود
+    */
+
+    if (unlockBtn) {
+
+        unlockBtn.addEventListener(
+            "click",
+            unlockPOS
+        );
+
+    }
+
+
+    /*
+       ورود با کلید Enter
+    */
+
+    if (pinInput) {
+
+        pinInput.focus();
+
+
+        pinInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key === "Enter") {
+
+                    unlockPOS();
+
+                }
+
+            }
+        );
+
+    }
+
 }
 
 
@@ -37,33 +319,49 @@ function renderCategories() {
 
     container.innerHTML = "";
 
-    categories.forEach((category, index) => {
 
-        const button =
-            document.createElement("button");
+    categories.forEach(
+        (category, index) => {
 
-        button.className = "tab";
+            const button =
+                document.createElement("button");
 
-        if (index === currentCategory) {
-            button.classList.add("active");
+
+            button.className = "tab";
+
+
+            if (
+                index === currentCategory
+            ) {
+
+                button.classList.add(
+                    "active"
+                );
+
+            }
+
+
+            button.innerHTML = `
+                <span>${category.icon}</span>
+                <span>${category.title}</span>
+            `;
+
+
+            button.onclick = () => {
+
+                currentCategory = index;
+
+                renderCategories();
+                renderMenu();
+
+            };
+
+
+            container.appendChild(button);
+
         }
+    );
 
-        button.innerHTML = `
-            <span>${category.icon}</span>
-            <span>${category.title}</span>
-        `;
-
-        button.onclick = () => {
-
-            currentCategory = index;
-
-            renderCategories();
-            renderMenu();
-
-        };
-
-        container.appendChild(button);
-    });
 }
 
 
@@ -74,87 +372,114 @@ function renderCategories() {
 function renderMenu() {
 
     const container =
-        document.getElementById("menuContainer");
+        document.getElementById(
+            "menuContainer"
+        );
+
 
     const category =
         categories[currentCategory];
 
+
     container.innerHTML = "";
+
 
     const panel =
         document.createElement("div");
 
-    panel.className = "order-panel";
+
+    panel.className =
+        "order-panel";
 
 
     const title =
         document.createElement("div");
 
-    title.className = "order-title";
+
+    title.className =
+        "order-title";
+
 
     title.textContent =
-        category.icon + "  " + category.title;
+        category.icon +
+        "  " +
+        category.title;
+
 
     panel.appendChild(title);
 
 
-    category.items.forEach((item, index) => {
+    category.items.forEach(
+        (item, index) => {
 
-        const name = item[0];
-        const price = item[1];
-        const special = item[2];
+            const name =
+                item[0];
 
-        const row =
-            document.createElement("div");
+            const price =
+                item[1];
 
-        row.className = "pos-item";
+            const special =
+                item[2];
 
-        row.innerHTML = `
-            <div>
-                <div class="pos-name">
-                    ${name}
-                    ${
-                        special
-                            ? `<span class="special-tag">${special}</span>`
-                            : ""
-                    }
+
+            const row =
+                document.createElement("div");
+
+
+            row.className =
+                "pos-item";
+
+
+            row.innerHTML = `
+                <div>
+                    <div class="pos-name">
+                        ${name}
+                        ${
+                            special
+                                ? `<span class="special-tag">${special}</span>`
+                                : ""
+                        }
+                    </div>
                 </div>
-            </div>
 
-            <div style="
-                display:flex;
-                align-items:center;
-                gap:12px;
-            ">
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:12px;
+                ">
 
-                <span class="pos-price">
-                    ${price}
-                </span>
+                    <span class="pos-price">
+                        ${price}
+                    </span>
 
-                <button class="add-btn">
-                    +
-                </button>
+                    <button class="add-btn">
+                        +
+                    </button>
 
-            </div>
-        `;
-
-
-        row.querySelector(".add-btn").onclick = () => {
-
-            addToOrder(
-                currentCategory,
-                index
-            );
-
-        };
+                </div>
+            `;
 
 
-        panel.appendChild(row);
+            row.querySelector(
+                ".add-btn"
+            ).onclick = () => {
 
-    });
+                addToOrder(
+                    currentCategory,
+                    index
+                );
+
+            };
+
+
+            panel.appendChild(row);
+
+        }
+    );
 
 
     container.appendChild(panel);
+
 }
 
 
@@ -162,13 +487,19 @@ function renderMenu() {
    اضافه کردن آیتم به سفارش
 ===================================================== */
 
-function addToOrder(categoryIndex, itemIndex) {
+function addToOrder(
+    categoryIndex,
+    itemIndex
+) {
 
     const item =
-        categories[categoryIndex].items[itemIndex];
+        categories[categoryIndex]
+        .items[itemIndex];
+
 
     const name =
         item[0];
+
 
     const price =
         Number(
@@ -179,8 +510,10 @@ function addToOrder(categoryIndex, itemIndex) {
     const existing =
         order.find(
             x =>
-                x.categoryIndex === categoryIndex &&
-                x.itemIndex === itemIndex
+                x.categoryIndex ===
+                    categoryIndex &&
+                x.itemIndex ===
+                    itemIndex
         );
 
 
@@ -191,17 +524,20 @@ function addToOrder(categoryIndex, itemIndex) {
     } else {
 
         order.push({
+
             categoryIndex,
             itemIndex,
             name,
             price,
             quantity: 1
+
         });
 
     }
 
 
     renderOrder();
+
 }
 
 
@@ -211,7 +547,9 @@ function addToOrder(categoryIndex, itemIndex) {
 
 function decreaseItem(index) {
 
-    if (order[index].quantity > 1) {
+    if (
+        order[index].quantity > 1
+    ) {
 
         order[index].quantity--;
 
@@ -221,7 +559,9 @@ function decreaseItem(index) {
 
     }
 
+
     renderOrder();
+
 }
 
 
@@ -234,6 +574,7 @@ function increaseItem(index) {
     order[index].quantity++;
 
     renderOrder();
+
 }
 
 
@@ -244,7 +585,10 @@ function increaseItem(index) {
 function renderOrder() {
 
     const container =
-        document.getElementById("orderPanel");
+        document.getElementById(
+            "orderPanel"
+        );
+
 
     container.innerHTML = "";
 
@@ -252,35 +596,50 @@ function renderOrder() {
     const panel =
         document.createElement("div");
 
-    panel.className = "order-panel";
+
+    panel.className =
+        "order-panel";
 
 
     const title =
         document.createElement("div");
 
-    title.className = "order-title";
+
+    title.className =
+        "order-title";
+
 
     title.textContent =
         "🧾 سفارش جاری";
 
+
     panel.appendChild(title);
 
 
-    if (order.length === 0) {
+    if (
+        order.length === 0
+    ) {
 
         const empty =
             document.createElement("div");
 
-        empty.className = "empty-order";
+
+        empty.className =
+            "empty-order";
+
 
         empty.textContent =
             "هنوز آیتمی به سفارش اضافه نشده است.";
 
+
         panel.appendChild(empty);
+
 
         container.appendChild(panel);
 
+
         return;
+
     }
 
 
@@ -288,86 +647,91 @@ function renderOrder() {
        آیتم های سفارش
     ----------------------------- */
 
-    order.forEach((item, index) => {
+    order.forEach(
+        (item, index) => {
 
-        const row =
-            document.createElement("div");
-
-        row.className = "pos-item";
-
-
-        const itemTotal =
-            item.price * item.quantity;
+            const row =
+                document.createElement("div");
 
 
-        row.innerHTML = `
+            row.className =
+                "pos-item";
 
-            <div>
 
-                <div class="pos-name">
-                    ${item.name}
+            const itemTotal =
+                item.price *
+                item.quantity;
+
+
+            row.innerHTML = `
+
+                <div>
+
+                    <div class="pos-name">
+                        ${item.name}
+                    </div>
+
+                    <div style="
+                        color:#BFC7D4;
+                        font-size:13px;
+                        margin-top:4px;
+                    ">
+
+                        ${toPersianNumber(item.price)}
+                        ×
+                        ${toPersianNumber(item.quantity)}
+
+                    </div>
+
                 </div>
+
 
                 <div style="
-                    color:#BFC7D4;
-                    font-size:13px;
-                    margin-top:4px;
+                    display:flex;
+                    align-items:center;
+                    gap:8px;
                 ">
 
-                    ${toPersianNumber(item.price)}
-                    ×
-                    ${toPersianNumber(item.quantity)}
+                    <button
+                        class="quantity-btn"
+                        onclick="decreaseItem(${index})">
+
+                        −
+
+                    </button>
+
+
+                    <span class="quantity">
+
+                        ${toPersianNumber(item.quantity)}
+
+                    </span>
+
+
+                    <button
+                        class="quantity-btn"
+                        onclick="increaseItem(${index})">
+
+                        +
+
+                    </button>
+
+
+                    <span class="pos-price">
+
+                        ${toPersianNumber(itemTotal)}
+
+                    </span>
 
                 </div>
 
-            </div>
+            `;
 
 
-            <div style="
-                display:flex;
-                align-items:center;
-                gap:8px;
-            ">
+            panel.appendChild(row);
 
-                <button
-                    class="quantity-btn"
-                    onclick="decreaseItem(${index})">
-
-                    −
-
-                </button>
-
-
-                <span class="quantity">
-
-                    ${toPersianNumber(item.quantity)}
-
-                </span>
-
-
-                <button
-                    class="quantity-btn"
-                    onclick="increaseItem(${index})">
-
-                    +
-
-                </button>
-
-
-                <span class="pos-price">
-
-                    ${toPersianNumber(itemTotal)}
-
-                </span>
-
-            </div>
-
-        `;
-
-
-        panel.appendChild(row);
-
-    });
+        }
+    );
 
 
     /* -----------------------------
@@ -377,13 +741,16 @@ function renderOrder() {
     const total =
         order.reduce(
             (sum, item) =>
-                sum + item.price * item.quantity,
+                sum +
+                item.price *
+                item.quantity,
             0
         );
 
 
     const totalRow =
         document.createElement("div");
+
 
     totalRow.className =
         "total-row";
@@ -412,6 +779,7 @@ function renderOrder() {
     const buttons =
         document.createElement("div");
 
+
     buttons.className =
         "action-buttons";
 
@@ -428,17 +796,17 @@ function renderOrder() {
 
 
         <button
-             class="action-btn pdf-btn"
-             onclick="savePDF()">
+            class="action-btn pdf-btn"
+            onclick="savePDF()">
 
-             <span class="pdf-icon">📄</span>
+            <span class="pdf-icon">📄</span>
 
-             <span class="pdf-text">
-              ذخیره PDF
-        <small>نسخه دیجیتال</small>
-    </span>
+            <span class="pdf-text">
+                ذخیره PDF
+                <small>نسخه دیجیتال</small>
+            </span>
 
-</button>
+        </button>
 
 
         <button
@@ -455,6 +823,7 @@ function renderOrder() {
     panel.appendChild(buttons);
 
     container.appendChild(panel);
+
 }
 
 
@@ -464,13 +833,19 @@ function renderOrder() {
 
 function clearOrder() {
 
-    if (order.length === 0) {
+    if (
+        order.length === 0
+    ) {
+
         return;
+
     }
 
 
     if (
-        confirm("آیا سفارش فعلی پاک شود؟")
+        confirm(
+            "آیا سفارش فعلی پاک شود؟"
+        )
     ) {
 
         order = [];
@@ -478,6 +853,7 @@ function clearOrder() {
         renderOrder();
 
     }
+
 }
 
 
@@ -490,7 +866,9 @@ function createReceiptHTML() {
     const total =
         order.reduce(
             (sum, item) =>
-                sum + item.price * item.quantity,
+                sum +
+                item.price *
+                item.quantity,
             0
         );
 
@@ -498,37 +876,40 @@ function createReceiptHTML() {
     let itemsHTML = "";
 
 
-    order.forEach(item => {
+    order.forEach(
+        item => {
 
-        const itemTotal =
-            item.price * item.quantity;
+            const itemTotal =
+                item.price *
+                item.quantity;
 
 
-        itemsHTML += `
+            itemsHTML += `
 
-            <div class="receipt-item">
+                <div class="receipt-item">
 
-                <div class="item-name">
-                    ${item.name}
+                    <div class="item-name">
+                        ${item.name}
+                    </div>
+
+                    <div class="item-qty">
+                        ${toPersianNumber(item.quantity)}
+                    </div>
+
+                    <div class="item-price">
+                        ${toPersianNumber(item.price)}
+                    </div>
+
+                    <div class="item-total">
+                        ${toPersianNumber(itemTotal)}
+                    </div>
+
                 </div>
 
-                <div class="item-qty">
-                    ${toPersianNumber(item.quantity)}
-                </div>
+            `;
 
-                <div class="item-price">
-                    ${toPersianNumber(item.price)}
-                </div>
-
-                <div class="item-total">
-                    ${toPersianNumber(itemTotal)}
-                </div>
-
-            </div>
-
-        `;
-
-    });
+        }
+    );
 
 
     const now =
@@ -537,7 +918,9 @@ function createReceiptHTML() {
 
     const date =
         toPersianNumber(
-            now.toLocaleDateString("fa-IR")
+            now.toLocaleDateString(
+                "fa-IR"
+            )
         );
 
 
@@ -649,13 +1032,16 @@ function createReceiptHTML() {
 
 function printReceipt() {
 
-    if (order.length === 0) {
+    if (
+        order.length === 0
+    ) {
 
         alert(
             "ابتدا حداقل یک آیتم به سفارش اضافه کنید."
         );
 
         return;
+
     }
 
 
@@ -670,13 +1056,16 @@ function printReceipt() {
 
 function savePDF() {
 
-    if (order.length === 0) {
+    if (
+        order.length === 0
+    ) {
 
         alert(
             "ابتدا حداقل یک آیتم به سفارش اضافه کنید."
         );
 
         return;
+
     }
 
 
@@ -706,6 +1095,7 @@ function openReceiptWindow() {
         );
 
         return;
+
     }
 
 
@@ -718,9 +1108,10 @@ function openReceiptWindow() {
         <head>
 
             <meta charset="UTF-8">
+
             <link
-               href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
-               rel="stylesheet">
+                href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
+                rel="stylesheet">
 
             <meta
                 name="viewport"
@@ -733,7 +1124,12 @@ function openReceiptWindow() {
 
 
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
+
+                @import url(
+                    'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap'
+                );
+
+
                 * {
                     box-sizing:border-box;
                 }
@@ -851,21 +1247,27 @@ function openReceiptWindow() {
 
                 .receipt-columns {
 
-                   font-weight:700;
-               
-                   font-size:9px;
-               
-                   margin-bottom:2mm;
-            
-               }
+                    font-weight:700;
 
-               .receipt-columns .column-name {
-                   text-align:right;
-               }
-               
-               .receipt-columns span:not(.column-name) {
-                   text-align:center;
-               }
+                    font-size:9px;
+
+                    margin-bottom:2mm;
+
+                }
+
+
+                .receipt-columns .column-name {
+
+                    text-align:right;
+
+                }
+
+
+                .receipt-columns span:not(.column-name) {
+
+                    text-align:center;
+
+                }
 
 
                 .receipt-item {
@@ -891,6 +1293,7 @@ function openReceiptWindow() {
                 .item-total {
 
                     text-align:center;
+
                     white-space:nowrap;
 
                 }
@@ -985,11 +1388,14 @@ function openReceiptWindow() {
     printWindow.focus();
 
 
-    setTimeout(() => {
+    setTimeout(
+        () => {
 
-        printWindow.print();
+            printWindow.print();
 
-    }, 400);
+        },
+        400
+    );
 
 }
 
@@ -997,6 +1403,20 @@ function openReceiptWindow() {
 /* =====================================================
    شروع برنامه
 ===================================================== */
+
+
+/*
+   ابتدا صفحه قفل را بررسی می‌کنیم.
+*/
+
+initializeLockScreen();
+
+
+/*
+   سپس محتوای POS آماده می‌شود.
+   این بخش حتی هنگام قفل بودن اجرا می‌شود،
+   اما خود POS تا زمان ورود نمایش داده نمی‌شود.
+*/
 
 renderCategories();
 
