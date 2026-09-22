@@ -78,7 +78,35 @@ function showPOS() {
     }
 
 }
+/* =====================================================
+   قفل کردن دستی صندوق
+===================================================== */
 
+function lockPOS() {
+
+    const lockScreen =
+        document.getElementById("lockScreen");
+
+    const posApp =
+        document.getElementById("posApp");
+
+    const pinInput =
+        document.getElementById("pinInput");
+
+    if (posApp) {
+        posApp.style.display = "none";
+    }
+
+    if (lockScreen) {
+        lockScreen.style.display = "flex";
+    }
+
+    if (pinInput) {
+        pinInput.value = "";
+        pinInput.focus();
+    }
+
+}
 
 /* =====================================================
    ذخیره ورود برای ۳۰ روز
@@ -217,17 +245,11 @@ function unlockPOS() {
 
 function initializeLockScreen() {
 
-    const lockScreen =
-        document.getElementById("lockScreen");
-
-    const posApp =
-        document.getElementById("posApp");
-
-    const pinInput =
-        document.getElementById("pinInput");
-
-    const unlockBtn =
-        document.getElementById("unlockBtn");
+   const lockScreen = document.getElementById("lockScreen");
+   const posApp = document.getElementById("posApp");
+   const pinInput = document.getElementById("pinInput");
+   const unlockBtn = document.getElementById("unlockBtn");
+   const lockBtn = document.getElementById("lockBtn");
 
 
     if (
@@ -279,7 +301,16 @@ function initializeLockScreen() {
         );
 
     }
+   /* دکمه قفل صندوق */
+   
+   if (lockBtn) {
+   
+       lockBtn.addEventListener(
+           "click",
+           lockPOS
+       );
 
+}
 
     /*
        ورود با کلید Enter
