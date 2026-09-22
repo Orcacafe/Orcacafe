@@ -84,27 +84,18 @@ function showPOS() {
 
 function lockPOS() {
 
-    const lockScreen =
-        document.getElementById("lockScreen");
+    const lockScreen = document.getElementById("lockScreen");
+    const posApp = document.getElementById("posApp");
+    const pinInput = document.getElementById("pinInput");
 
-    const posApp =
-        document.getElementById("posApp");
+    /* فقط قفل موقت؛ اعتبار ۳۰ روزه حذف نمی‌شود */
+    sessionStorage.setItem("orca_pos_locked", "1");
 
-    const pinInput =
-        document.getElementById("pinInput");
+    posApp.style.display = "none";
+    lockScreen.style.display = "flex";
 
-    if (posApp) {
-        posApp.style.display = "none";
-    }
-
-    if (lockScreen) {
-        lockScreen.style.display = "flex";
-    }
-
-    if (pinInput) {
-        pinInput.value = "";
-        pinInput.focus();
-    }
+    pinInput.value = "";
+    pinInput.focus();
 
 }
 
@@ -143,7 +134,9 @@ function rememberDevice() {
 ===================================================== */
 
 function checkRememberedLogin() {
-
+   if (sessionStorage.getItem("orca_pos_locked") === "1") {
+    return false;
+   }
     let expiresAt = null;
 
 
@@ -215,7 +208,7 @@ function unlockPOS() {
 
 
     if (enteredPIN === POS_PIN) {
-
+         sessionStorage.removeItem("orca_pos_locked");
         rememberDevice();
 
         showPOS();
@@ -245,99 +238,45 @@ function unlockPOS() {
 
 function initializeLockScreen() {
 
-   const lockScreen = document.getElementById("lockScreen");
-   const posApp = document.getElementById("posApp");
-   const pinInput = document.getElementById("pinInput");
-   const unlockBtn = document.getElementById("unlockBtn");
-   const lockBtn = document.getElementById("lockBtn");
+    const lockScreen = document.getElementById("lockScreen");
+    const posApp = document.getElementById("posApp");
+    const pinInput = document.getElementById("pinInput");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const lockBtn = document.getElementById("lockBtn");
 
+    if (!lockScreen || !posApp) return;
 
-    if (
-        !lockScreen ||
-        !posApp
-    ) {
-
-        return;
-
+    /* دکمه قفل فقط یک بار */
+    if (lockBtn) {
+        lockBtn.addEventListener("click", lockPOS);
     }
-
-
-    /*
-       ابتدا POS را مخفی می‌کنیم
-       تا زمانی که ورود تأیید شود.
-    */
 
     posApp.style.display = "none";
 
-
-    /*
-       اگر دستگاه قبلاً به خاطر سپرده شده،
-       مستقیماً وارد POS می‌شویم.
-    */
-
-    if (checkRememberedLogin()) {
-
-        return;
-
-    }
-
-
-    /*
-       نمایش صفحه قفل
-    */
+    /* ورود خودکار */
+    if (checkRememberedLogin()) return;
 
     lockScreen.style.display = "flex";
 
-
-    /*
-       دکمه ورود
-    */
-
     if (unlockBtn) {
-
-        unlockBtn.addEventListener(
-            "click",
-            unlockPOS
-        );
-
+        unlockBtn.addEventListener("click", unlockPOS);
     }
-   /* دکمه قفل صندوق */
-   
-   if (lockBtn) {
-   
-       lockBtn.addEventListener(
-           "click",
-           lockPOS
-       );
-
-}
-
-    /*
-       ورود با کلید Enter
-    */
 
     if (pinInput) {
 
         pinInput.focus();
 
+        pinInput.addEventListener("keydown", event => {
 
-        pinInput.addEventListener(
-            "keydown",
-            event => {
-
-                if (event.key === "Enter") {
-
-                    unlockPOS();
-
-                }
-
+            if (event.key === "Enter") {
+                unlockPOS();
             }
-        );
+
+        });
 
     }
 
 }
-
 
 /* =====================================================
    نمایش دسته بندی ها
