@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ORCA CAFE Printer Connectivity Test</title>
+</head>
+<body>
+  <h2>Local printer bridge test</h2>
+  <p>This is a temporary connectivity test.</p>
+
+  <button id="test">Send test request</button>
+  <pre id="result">Not tested yet</pre>
+
+  <script>
+    document.getElementById("test").onclick = async () => {
+      const result = document.getElementById("result");
+      result.textContent = "Sending request...";
+
+      try {
+        const response = await fetch(
+          "http://192.168.1.102:8765/test",
+          {
+            method: "POST",
+            headers: {"Content-Type": "text/plain"},
+            body: "ORCA CAFE connectivity test"
+          }
+        );
+
+        result.textContent =
+          "HTTP status: " + response.status + "\n" +
+          await response.text();
+      } catch (error) {
+        result.textContent = "ERROR: " + String(error);
+      }
+    };
+  </script>
+</body>
+</html>
