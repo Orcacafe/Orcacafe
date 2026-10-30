@@ -1242,7 +1242,7 @@ async function sendDirectPrintToBridge() {
     try {
         // از همان قالب کامل چاپ معمولی استفاده می‌کنیم.
         const html = buildReceiptDocument();
-
+        const chunkStartTime = performance.now();
         const response = await fetch(BRIDGE_URL, {
             method: "POST",
             headers: {
@@ -1479,7 +1479,11 @@ async function sendDirectPrintToESP32() {
             );
 
             const result = await response.text();
-
+            console.log(
+                "Chunk transfer time:",
+                (performance.now() - chunkStartTime).toFixed(0),
+                "ms"
+            );
             if (!response.ok) {
                 throw new Error(
                     "خطا در ارسال قطعه تصویر: HTTP " +
