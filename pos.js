@@ -764,6 +764,17 @@ function renderOrder() {
 
         </button>
 
+        <button
+            class="action-btn print-btn"
+            onclick="sendDirectPrintToBridge()">
+            🧪 چاپ مستقیم شبکه‌ای
+        </button>
+
+        <button
+            class="action-btn print-btn"
+            onclick="sendDirectPrintToESP32()">
+            🖨 چاپ مستقیم با ESP32
+        </button>
 
         <button
             class="action-btn pdf-btn"
@@ -1048,327 +1059,489 @@ function savePDF() {
    باز کردن رسید برای چاپ یا PDF
 ===================================================== */
 
-function openReceiptWindow() {
 
-    const printWindow =
-        window.open(
-            "",
-            "_blank",
-            "width=420,height=700"
-        );
-
-
-    if (!printWindow) {
-
-        alert(
-            "پنجره چاپ توسط مرورگر مسدود شده است."
-        );
-
-        return;
-
-    }
-
-
-    printWindow.document.write(`
-
+function buildReceiptDocument() {
+    return `
         <!DOCTYPE html>
-
         <html lang="fa" dir="rtl">
-
         <head>
-
             <meta charset="UTF-8">
-
-            <link
-                href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap"
-                rel="stylesheet">
-
-            <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0">
-
-
-            <title>
-                فاکتور ORCA CAFE
-            </title>
-
+            <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>فاکتور ORCA CAFE</title>
 
             <style>
-
-                @import url(
-                    'https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap'
-                );
-
+                @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
 
                 * {
-                    box-sizing:border-box;
+                    box-sizing: border-box;
                 }
 
-
-                html,
-                body {
-
-                    margin:0;
-                    padding:0;
-
-                    background:white;
-
-                    color:#111;
-
-                    font-family:
-                        "Vazirmatn",
-                        Arial,
-                        Tahoma,
-                        sans-serif;
-
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                    background: white;
+                    color: #111;
+                    font-family: "Vazirmatn", Arial, Tahoma, sans-serif;
                 }
-
 
                 body {
-                    width:100%;
+                    width: 100%;
                 }
-
 
                 .receipt {
-
-                    width:72mm;
-
-                    margin:0 auto;
-
-                    padding:4mm 2mm;
-
-                    font-size:11px;
-
+                    width: 72mm;
+                    margin: 0 auto;
+                    padding: 1mm 2mm 4mm;
+                    font-size: 11px;
                 }
-
 
                 .receipt-header {
-
-                    text-align:center;
-
-                    margin-bottom:5mm;
-
+                    text-align: center;
+                    margin-bottom: 5mm;
                 }
-
 
                 .receipt-title {
-
-                    font-size:20px;
-
-                    font-weight:700;
-
-                    letter-spacing:.5px;
-
+                    font-size: 20px;
+                    font-weight: 700;
+                    letter-spacing: .5px;
                 }
-
 
                 .receipt-subtitle {
-
-                    font-size:12px;
-
-                    margin-top:2mm;
-
+                    font-size: 12px;
+                    margin-top: 2mm;
                 }
-
 
                 .receipt-info {
-
-                    display:flex;
-
-                    justify-content:space-between;
-
-                    gap:5px;
-
-                    font-size:9px;
-
-                    margin-bottom:3mm;
-
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 5px;
+                    font-size: 9px;
+                    margin-bottom: 3mm;
                 }
-
 
                 .receipt-line {
-
-                    border-top:
-                        1px dashed #555;
-
-                    margin:
-                        3mm 0;
-
+                    border-top: 1px dashed #555;
+                    margin: 3mm 0;
                 }
-
 
                 .receipt-columns,
                 .receipt-item {
-
-                    display:grid;
-
-                    grid-template-columns:
-                        minmax(0, 1fr)
-                        11mm
-                        17mm
-                        17mm;
-
-                    column-gap:1mm;
-
-                    align-items:center;
-
+                    display: grid;
+                    grid-template-columns: minmax(0, 1fr) 11mm 17mm 17mm;
+                    column-gap: 1mm;
+                    align-items: center;
                 }
-
 
                 .receipt-columns {
-
-                    font-weight:700;
-
-                    font-size:9px;
-
-                    margin-bottom:2mm;
-
+                    font-weight: 700;
+                    font-size: 9px;
+                    margin-bottom: 2mm;
                 }
-
 
                 .receipt-columns .column-name {
-
-                    text-align:right;
-
+                    text-align: right;
                 }
-
 
                 .receipt-columns span:not(.column-name) {
-
-                    text-align:center;
-
+                    text-align: center;
                 }
-
 
                 .receipt-item {
-
-                    font-size:10px;
-
-                    margin-bottom:2mm;
-
+                    font-size: 10px;
+                    margin-bottom: 2mm;
                 }
-
 
                 .item-name {
-
-                    text-align:right;
-
-                    overflow-wrap:anywhere;
-
+                    text-align: right;
+                    overflow-wrap: anywhere;
                 }
-
 
                 .item-qty,
                 .item-price,
                 .item-total {
-
-                    text-align:center;
-
-                    white-space:nowrap;
-
+                    text-align: center;
+                    white-space: nowrap;
                 }
-
 
                 .item-total {
-
-                    font-weight:600;
-
+                    font-weight: 600;
                 }
-
 
                 .receipt-total {
-
-                    display:flex;
-
-                    justify-content:space-between;
-
-                    align-items:center;
-
-                    font-size:14px;
-
-                    font-weight:700;
-
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    font-size: 14px;
+                    font-weight: 700;
                 }
-
 
                 .receipt-footer {
-
-                    text-align:center;
-
-                    font-size:10px;
-
-                    line-height:1.8;
-
-                    margin-top:6mm;
-
+                    text-align: center;
+                    font-size: 10px;
+                    line-height: 1.8;
+                    margin-top: 6mm;
                 }
-
 
                 @page {
-
-                    size:80mm auto;
-
-                    margin:0;
-
+                    size: 80mm auto;
+                    margin: 0;
                 }
-
 
                 @media print {
-
-                    html,
-                    body {
-
-                        width:80mm;
-
-                        margin:0;
-
-                        padding:0;
-
+                    html, body {
+                        width: 80mm;
+                        margin: 0;
+                        padding: 0;
                     }
-
 
                     .receipt {
-
-                        width:72mm;
-
-                        margin:0 auto;
-
+                        width: 72mm;
+                        margin: 0 auto;
                     }
-
                 }
-
             </style>
-
         </head>
-
-
         <body>
-
             ${createReceiptHTML()}
-
         </body>
-
         </html>
-
-    `);
-
-
-    printWindow.document.close();
-
-    printWindow.focus();
-
-
-    setTimeout(
-        () => {
-
-            printWindow.print();
-
-        },
-        400
-    );
-
+    `;
 }
 
+
+function openReceiptWindow() {
+    const printWindow = window.open("", "_blank", "width=420,height=700");
+
+    if (!printWindow) {
+        alert("پنجره چاپ توسط مرورگر مسدود شده است.");
+        return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(buildReceiptDocument());
+    printWindow.document.close();
+    printWindow.focus();
+
+    setTimeout(() => {
+        printWindow.print();
+    }, 400);
+}
+
+
+
+async function sendDirectPrintToBridge() {
+    if (!Array.isArray(order) || order.length === 0) {
+        alert("ابتدا یک محصول به سفارش اضافه کنید.");
+        return;
+    }
+
+    const BRIDGE_URL = "http://192.168.1.102:8766/print-image";
+    const TEST_TOKEN = "orca-test-2026";
+
+    try {
+        // از همان قالب کامل چاپ معمولی استفاده می‌کنیم.
+        const html = buildReceiptDocument();
+
+        const response = await fetch(BRIDGE_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Print-Token": TEST_TOKEN
+            },
+            body: JSON.stringify({ html })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "HTTP " + response.status);
+        }
+
+        console.log("Direct print result:", result);
+        alert("درخواست چاپ مستقیم ارسال شد.");
+
+    } catch (error) {
+        console.error("Direct print failed:", error);
+        alert(
+            "چاپ مستقیم انجام نشد.\n" +
+            "اتصال شبکه، پل چاپ و Console مرورگر را بررسی کنید."
+        );
+    }
+}
+
+async function sendDirectPrintToESP32() {
+    if (!Array.isArray(order) || order.length === 0) {
+        alert("ابتدا یک محصول به سفارش اضافه کنید.");
+        return;
+    }
+
+    const ESP32_URL = "http://192.168.1.103";
+    const MAX_ROWS_PER_CHUNK = 60;
+
+    let iframe = null;
+
+    try {
+        // بارگذاری html2canvas در صورت نیاز
+        if (typeof window.html2canvas !== "function") {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement("script");
+
+                script.src =
+                    "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+
+                script.onload = () => {
+                    if (typeof window.html2canvas === "function") {
+                        resolve();
+                    } else {
+                        reject(new Error(
+                            "کتابخانه بارگذاری شد اما تابع آن در دسترس نیست."
+                        ));
+                    }
+                };
+
+                script.onerror = () => reject(new Error(
+                    "بارگذاری html2canvas ناموفق بود."
+                ));
+
+                document.head.appendChild(script);
+            });
+        }
+
+        // ساخت سند رسید با قالب فعلی
+        iframe = document.createElement("iframe");
+        iframe.style.position = "fixed";
+        iframe.style.left = "-10000px";
+        iframe.style.top = "0";
+        iframe.style.width = "272px";
+        iframe.style.height = "1000px";
+        iframe.style.border = "0";
+        document.body.appendChild(iframe);
+
+        const doc = iframe.contentDocument;
+        doc.open();
+        doc.write(buildReceiptDocument());
+        doc.close();
+
+        // منتظر آماده‌شدن فونت‌ها و محتوای رسید می‌مانیم
+        if (doc.fonts && doc.fonts.ready) {
+            await doc.fonts.ready;
+        }
+
+        const receipt = doc.querySelector(".receipt");
+
+        if (!receipt) {
+            throw new Error("بخش رسید در سند پیدا نشد.");
+        }
+
+        const canvas = await window.html2canvas(receipt, {
+            backgroundColor: "#ffffff",
+            scale: 2,
+            useCORS: true,
+            logging: false
+        });
+
+        console.log("Receipt element:", receipt.getBoundingClientRect());
+        console.log("Canvas size:", canvas.width, canvas.height);
+        
+        const ctx = canvas.getContext("2d");
+        const width = canvas.width;
+
+        // افزودن فضای سفید در پایین رسید
+        const EXTRA_BOTTOM_ROWS = 120;
+        const height = canvas.height + EXTRA_BOTTOM_ROWS;
+        const widthBytes = Math.ceil(width / 8);
+
+        const extendedCanvas = document.createElement("canvas");
+        extendedCanvas.width = width;
+        extendedCanvas.height = height;
+
+        const extendedCtx = extendedCanvas.getContext("2d");
+        extendedCtx.fillStyle = "#ffffff";
+        extendedCtx.fillRect(0, 0, width, height);
+        extendedCtx.drawImage(canvas, 0, 0);
+
+        const pixels = extendedCtx.getImageData(
+            0, 0, width, height
+        ).data;
+        
+        let firstInkRow = -1;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const p = (y * width + x) * 4;
+
+                const gray =
+                    0.299 * pixels[p] +
+                    0.587 * pixels[p + 1] +
+                    0.114 * pixels[p + 2];
+
+                if (gray < 160) {
+                    firstInkRow = y;
+                    break;
+                }
+            }
+
+            if (firstInkRow !== -1) break;
+        }
+
+        console.log("First printed content row:", firstInkRow);
+        console.log(
+            "Top white space:",
+            firstInkRow / 2,
+            "CSS pixels"
+        );
+
+        console.log("Suggested top crop:", Math.max(0, firstInkRow - 7));
+
+        if (widthBytes > 255) {
+            throw new Error("عرض تصویر برای این فرمان چاپ بیش از حد است.");
+        }
+        
+        // حذف فضای سفید اضافی از بالای تصویر
+        const TOP_CROP_ROWS = Math.max(0, firstInkRow - 7);
+        const croppedHeight = height - TOP_CROP_ROWS;
+
+        // تبدیل تصویر برش‌خورده به داده سیاه‌وسفید ESC/POS
+        const raster = new Uint8Array(widthBytes * croppedHeight);
+
+        for (let y = 0; y < croppedHeight; y++) {
+            const sourceY = y + TOP_CROP_ROWS;
+
+            for (let x = 0; x < width; x++) {
+                const p = (sourceY * width + x) * 4;
+                const gray =
+                    0.299 * pixels[p] +
+                    0.587 * pixels[p + 1] +
+                    0.114 * pixels[p + 2];
+
+                if (gray < 160) {
+                    const index = y * widthBytes + (x >> 3);
+                    raster[index] |= 0x80 >> (x & 7);
+                }
+            }
+        }
+
+        console.log("Top rows removed:", TOP_CROP_ROWS);
+        console.log("New raster height:", croppedHeight);
+
+        // شروع نشست چاپ در ESP32
+        const startResponse = await fetch(
+            `${ESP32_URL}/print-start`,
+            { method: "POST" }
+        );
+
+        if (!startResponse.ok) {
+            throw new Error(
+                `خطا در شروع نشست چاپ: HTTP ${startResponse.status} — ` +
+                await startResponse.text()
+            );
+        }
+
+        // ارسال تصویر در قطعات کوچک‌تر از محدودیت ESP32
+        for (let startY = 0; startY < croppedHeight; startY += MAX_ROWS_PER_CHUNK) {
+            const rows = Math.min(
+                MAX_ROWS_PER_CHUNK,
+                croppedHeight - startY
+            );
+
+            const bytes = [
+                0x1D, 0x76, 0x30, 0x00,
+                widthBytes & 0xFF,
+                (widthBytes >> 8) & 0xFF,
+                rows & 0xFF,
+                (rows >> 8) & 0xFF
+            ];
+
+            for (let y = startY; y < startY + rows; y++) {
+                const offset = y * widthBytes;
+
+                for (let x = 0; x < widthBytes; x++) {
+                    bytes.push(raster[offset + x]);
+                }
+            }
+
+
+            const hex = bytes
+                .map(b => b.toString(16).padStart(2, "0"))
+                .join("");
+
+            const response = await fetch(
+                ESP32_URL + "/print-hex",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain"
+                    },
+                    body: hex
+                }
+            );
+
+            const result = await response.text();
+
+            if (!response.ok) {
+                throw new Error(
+                    "خطا در ارسال قطعه تصویر: HTTP " +
+                    response.status + " — " + result
+                );
+            }
+
+            console.log(
+                "ESP32 image chunk sent:",
+                startY, "/", croppedHeight
+            );
+        }
+
+        
+        const cutResponse = await fetch(
+            ESP32_URL + "/print-end",
+            {
+                method: "POST"
+            }
+        );
+
+        
+        const cutResult = await cutResponse.text();
+
+        if (!cutResponse.ok) {
+            throw new Error(
+                "خطا در پایان نشست و برش: HTTP " +
+                cutResponse.status + " — " + cutResult
+            );
+        }
+
+
+        alert("داده‌های رسید به ESP32 ارسال شدند. چاپگر را بررسی کنید.");
+
+    
+    } catch (error) {
+        console.error("ESP32 print failed:", error);
+
+        // اگر چاپ شروع شده باشد، تلاش می‌کنیم نشست را لغو کنیم.
+        try {
+            await fetch(
+                "http://192.168.1.103/print-abort",
+                { method: "POST" }
+            );
+        } catch (abortError) {
+            console.error(
+                "ESP32 print abort failed:",
+                abortError
+            );
+        }
+
+        alert(
+            "چاپ با ESP32 انجام نشد.\n" +
+            error.message +
+            "\nConsole مرورگر را برای جزئیات بررسی کنید."
+        );
+    } finally {
+        if (iframe) {
+            iframe.remove();
+        }
+    }
+
+}
 
 /* =====================================================
    شروع برنامه
