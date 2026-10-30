@@ -1426,11 +1426,15 @@ async function sendDirectPrintToESP32() {
         console.log("New raster height:", croppedHeight);
 
         // شروع نشست چاپ در ESP32
+        const printStartTime = performance.now();
         const startResponse = await fetch(
             `${ESP32_URL}/print-start`,
             { method: "POST" }
         );
-
+        const startElapsed = Math.round(
+             performance.now() - printStartTime
+         );
+       
         if (!startResponse.ok) {
             throw new Error(
                 `خطا در شروع نشست چاپ: HTTP ${startResponse.status} — ` +
@@ -1522,6 +1526,7 @@ async function sendDirectPrintToESP32() {
 
         alert(
              "چاپ به پایان رسید.\n\n" +
+             "زمان شروع نشست: " + startElapsed + " ms\n\n" +
              "تعداد قطعات: " + chunkTimings.length + "\n" +
              "زمان ارسال هر قطعه (ms):\n" +
              chunkTimings.map((t, i) =>
