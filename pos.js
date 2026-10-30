@@ -1505,7 +1505,7 @@ async function sendDirectPrintToESP32() {
             );
         }
 
-        
+        const printEndTime = performance.now();
         const cutResponse = await fetch(
             ESP32_URL + "/print-end",
             {
@@ -1515,7 +1515,10 @@ async function sendDirectPrintToESP32() {
 
         
         const cutResult = await cutResponse.text();
-
+         const endElapsed = Math.round(
+             performance.now() - printEndTime
+         );
+       
         if (!cutResponse.ok) {
             throw new Error(
                 "خطا در پایان نشست و برش: HTTP " +
@@ -1527,6 +1530,7 @@ async function sendDirectPrintToESP32() {
         alert(
              "چاپ به پایان رسید.\n\n" +
              "زمان شروع نشست: " + startElapsed + " ms\n\n" +
+             "زمان پایان نشست: " + endElapsed + " ms\n" +
              "تعداد قطعات: " + chunkTimings.length + "\n" +
              "زمان ارسال هر قطعه (ms):\n" +
              chunkTimings.map((t, i) =>
