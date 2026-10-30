@@ -14,6 +14,9 @@ const REMEMBER_DAYS = 30;
 const REMEMBER_KEY =
     "orca_pos_remember_until";
 
+// فعال‌سازی گزارش زمان‌بندی چاپ فقط برای عیب‌یابی
+const PRINT_DIAGNOSTICS = false;
+
 
 /* =====================================================
    متغیرهای اصلی POS
@@ -758,22 +761,10 @@ function renderOrder() {
 
         <button
             class="action-btn print-btn"
-            onclick="printReceipt()">
+            onclick="sendDirectPrintToESP32()">
 
             🖨 چاپ فاکتور
 
-        </button>
-
-        <button
-            class="action-btn print-btn"
-            onclick="sendDirectPrintToBridge()">
-            🧪 چاپ مستقیم شبکه‌ای
-        </button>
-
-        <button
-            class="action-btn print-btn"
-            onclick="sendDirectPrintToESP32()">
-            🖨 چاپ مستقیم با ESP32
         </button>
 
         <button
@@ -1426,14 +1417,17 @@ async function sendDirectPrintToESP32() {
         console.log("New raster height:", croppedHeight);
 
         // شروع نشست چاپ در ESP32
-        const printStartTime = performance.now();
+        const printStartTime = PRINT_DIAGNOSTICS
+            ? performance.now() : null;
+
         const startResponse = await fetch(
             `${ESP32_URL}/print-start`,
             { method: "POST" }
         );
-        const startElapsed = Math.round(
-             performance.now() - printStartTime
-         );
+
+        const startElapsed = PRINT_DIAGNOSTICS
+            ? Math.round(performance.now() - printStartTime)
+            : null;
        
         if (!startResponse.ok) {
             throw new Error(
@@ -1443,7 +1437,7 @@ async function sendDirectPrintToESP32() {
         }
 
         // ارسال تصویر در قطعات کوچک‌تر از محدودیت ESP32
-        const chunkTimings = [];
+        const chunkTimings = PRINT_DIAGNOSTICS ? [] : null;
         for (let startY = 0; startY < croppedHeight; startY += MAX_ROWS_PER_CHUNK) {
             const rows = Math.min(
                 MAX_ROWS_PER_CHUNK,
@@ -1471,7 +1465,8 @@ async function sendDirectPrintToESP32() {
                 .map(b => b.toString(16).padStart(2, "0"))
                 .join("");
             console.log("HEX chunk length:", hex.length);
-            const chunkStartTime = performance.now();
+            const chunkStartTime = PRINT_DIAGNOSTICS
+                ? performance.now() : null;
             const response = await fetch(
                 ESP32_URL + "/print-hex",
                 {
@@ -1484,14 +1479,17 @@ async function sendDirectPrintToESP32() {
             );
 
             const result = await response.text();
-            chunkTimings.push(
-               Math.round(performance.now() - chunkStartTime)
-            );
-            console.log(
-                "Chunk transfer time:",
-                (performance.now() - chunkStartTime).toFixed(0),
-                "ms"
-            );
+            if (PRINT_DIAGNOSTICS) {
+                chunkTimings.push(
+                    Math.round(performance.now() - chunkStartTime)
+                );
+
+                console.log(
+                    "Chunk transfer time:",
+                    (performance.now() - chunkStartTime).toFixed(0),
+                    "ms"
+                );
+            }
             if (!response.ok) {
                 throw new Error(
                     "خطا در ارسال قطعه تصویر: HTTP " +
@@ -1505,7 +1503,8 @@ async function sendDirectPrintToESP32() {
             );
         }
 
-        const printEndTime = performance.now();
+        const printEndTime = PRINT_DIAGNOSTICS
+            ? performance.now() : null;
         const cutResponse = await fetch(
             ESP32_URL + "/print-end",
             {
@@ -1515,9 +1514,9 @@ async function sendDirectPrintToESP32() {
 
         
         const cutResult = await cutResponse.text();
-         const endElapsed = Math.round(
-             performance.now() - printEndTime
-         );
+        const endElapsed = PRINT_DIAGNOSTICS
+            ? Math.round(performance.now() - printEndTime)
+            : null;
        
         if (!cutResponse.ok) {
             throw new Error(
@@ -1527,16 +1526,22 @@ async function sendDirectPrintToESP32() {
         }
 
 
-        alert(
-             "چاپ به پایان رسید.\n\n" +
-             "زمان شروع نشست: " + startElapsed + " ms\n\n" +
-             "زمان پایان نشست: " + endElapsed + " ms\n" +
-             "تعداد قطعات: " + chunkTimings.length + "\n" +
-             "زمان ارسال هر قطعه (ms):\n" +
-             chunkTimings.map((t, i) =>
-                 (i + 1) + ": " + t + " ms"
-             ).join("\n")
-         );
+        if (PRINT_DIAGNOSTICS) {
+            alert(
+                "چاپ به پایان رسید.\n\n" +
+                "زمان شروع نشست: " + startElapsed + " ms\n\n" +
+                "زمان پایان نشست: " + endElapsed + " ms\n" +
+                "تعداد قطعات: " + chunkTimings.length + "\n" +
+                "زمان ارسال هر قطعه (ms):\n" +
+                chunkTimings.map((t, i) =>
+                    (i + 1) + ": " + t + " ms"
+                ).join("\n")
+            );
+        }
+
+        // پاک‌کردن سفارش پس از موفقیت چاپ
+        order = [];
+        renderOrder();
 
     
     } catch (error) {
