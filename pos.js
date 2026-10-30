@@ -1276,7 +1276,7 @@ async function sendDirectPrintToESP32() {
         return;
     }
 
-    const ESP32_URL = "http://192.168.1.103";
+    const ESP32_URL = "https://192.168.1.103";
     const MAX_ROWS_PER_CHUNK = 60;
 
     let iframe = null;
@@ -1465,7 +1465,8 @@ async function sendDirectPrintToESP32() {
             const hex = bytes
                 .map(b => b.toString(16).padStart(2, "0"))
                 .join("");
-
+            console.log("HEX chunk length:", hex.length);
+           
             const response = await fetch(
                 ESP32_URL + "/print-hex",
                 {
@@ -1520,7 +1521,7 @@ async function sendDirectPrintToESP32() {
         // اگر چاپ شروع شده باشد، تلاش می‌کنیم نشست را لغو کنیم.
         try {
             await fetch(
-                "http://192.168.1.103/print-abort",
+                `${ESP32_URL}/print-abort`,
                 { method: "POST" }
             );
         } catch (abortError) {
