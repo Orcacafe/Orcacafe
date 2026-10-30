@@ -1439,6 +1439,7 @@ async function sendDirectPrintToESP32() {
         }
 
         // ارسال تصویر در قطعات کوچک‌تر از محدودیت ESP32
+        const chunkTimings = [];
         for (let startY = 0; startY < croppedHeight; startY += MAX_ROWS_PER_CHUNK) {
             const rows = Math.min(
                 MAX_ROWS_PER_CHUNK,
@@ -1466,7 +1467,7 @@ async function sendDirectPrintToESP32() {
                 .map(b => b.toString(16).padStart(2, "0"))
                 .join("");
             console.log("HEX chunk length:", hex.length);
-           
+            const chunkStartTime = performance.now();
             const response = await fetch(
                 ESP32_URL + "/print-hex",
                 {
@@ -1479,6 +1480,9 @@ async function sendDirectPrintToESP32() {
             );
 
             const result = await response.text();
+            chunkTimings.push(
+               Math.round(performance.now() - chunkStartTime)
+            );
             console.log(
                 "Chunk transfer time:",
                 (performance.now() - chunkStartTime).toFixed(0),
@@ -1516,7 +1520,14 @@ async function sendDirectPrintToESP32() {
         }
 
 
-        alert("داده‌های رسید به ESP32 ارسال شدند. چاپگر را بررسی کنید.");
+        alert(
+             "چاپ به پایان رسید.\n\n" +
+             "تعداد قطعات: " + chunkTimings.length + "\n" +
+             "زمان ارسال هر قطعه (ms):\n" +
+             chunkTimings.map((t, i) =>
+                 (i + 1) + ": " + t + " ms"
+             ).join("\n")
+         );
 
     
     } catch (error) {
